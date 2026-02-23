@@ -1,4 +1,8 @@
+<div align="center">
+    
 # 🏥 Ontario ED Intelligence Platform
+
+</div>
 
 <div align="center">
 
@@ -31,15 +35,33 @@ This platform gives hospital operations teams and Ontario Health planners
 
 ---
 
-## 📸 Screenshots
+---
 
-| GTA Health Equity Heatmap | ED Surge Dashboard |
-|---|---|
-| ![Equity Heatmap](reports/gta_equity_heatmap.png) | ![Surge Dashboard](reports/gta_surge_dashboard.png) |
+## 📸 Platform Preview
 
-| ALC SHAP Explainability | Rx Anomaly Detection |
-|---|---|
-| ![ALC SHAP](reports/alc_shap_explainability.png) | ![Rx Anomaly](reports/rx_anomaly_detection.png) |
+<div align="center">
+
+<img src="reports/gta_equity_heatmap.png" width="750"><br><br>
+<b>GTA Health Equity Heatmap</b>
+
+<br><br>
+
+<img src="reports/gta_surge_dashboard.png" width="750"><br><br>
+<b>ED Surge Forecast Dashboard</b>
+
+<br><br>
+
+<img src="reports/alc_shap_explainability.png" width="750"><br><br>
+<b>ALC SHAP Explainability</b>
+
+<br><br>
+
+<img src="reports/rx_anomaly_detection.png" width="750"><br><br>
+<b>Prescription Anomaly Detection</b>
+
+</div>
+
+---
 
 ---
 
@@ -52,7 +74,9 @@ This platform gives hospital operations teams and Ontario Health planners
 - **Hospitals:** Sunnybrook HSC, Unity Health, North York General, Scarborough Health Network, Humber River Health, Trillium Health Partners
 - **Result:** 137 surge days predicted across 6 hospitals in 30-day horizon
 
-![ED Trends](reports/ed_trends_by_hospital.png)
+<div align="center">
+<img src="reports/ed_trends_by_hospital.png" width="750">
+</div>
 
 ---
 
@@ -63,7 +87,9 @@ This platform gives hospital operations teams and Ontario Health planners
 - **Coverage:** 260 Forward Sortation Areas across Greater Toronto Area
 - **Result:** Scarborough (M1W, M1N) confirmed as highest-need zones
 
-![FSA Base Map](reports/gta_fsa_base_map.png)
+<div align="center">
+<img src="reports/gta_fsa_base_map.png" width="750">
+</div>
 
 ---
 
@@ -81,7 +107,9 @@ Top 5 ALC risk factors by SHAP:
 4. Lives Alone - 0.8703
 5. Diagnosis - 0.7848
 
-![ALC Model Performance](reports/alc_model_performance.png)
+<div align="center">
+<img src="reports/alc_model_performance.png" width="750">
+</div>
 
 ---
 
@@ -98,7 +126,9 @@ Anomaly breakdown:
 - High-risk combinations: 18 (22.5%)
 - Other anomalies: 20 (25.0%)
 
-![Opioid Risk Quadrant](reports/rx_opioid_risk_quadrant.png)
+<div align="center">
+<img src="reports/rx_opioid_risk_quadrant.png" width="750">
+</div>
 
 ---
 

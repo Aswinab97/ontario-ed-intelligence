@@ -1,0 +1,21 @@
+prescriber_id,specialty,hospital,anomaly_type,anomaly_score,opioid_rate_pct,avg_opioid_mme,benzo_opioid_combo_pct,patients_per_month
+CPSO-100779,Orthopedics,Unity Health,Opioid Over-Prescriber,0.6458089200156762,58.7,157.9,4.76,91
+CPSO-100518,Geriatrics,Trillium Health Partners,Opioid Over-Prescriber,0.6308156221520498,40.93,187.9,5.21,121
+CPSO-101288,Emergency Medicine,Community Practice,Opioid Over-Prescriber,0.6178850315376457,59.7,95.5,3.57,162
+CPSO-101638,Geriatrics,North York General,Opioid Over-Prescriber,0.617404478234076,29.86,252.1,7.03,48
+CPSO-100045,Orthopedics,Community Practice,Opioid Over-Prescriber,0.6145063007945992,47.13,251.2,4.53,121
+CPSO-100485,General Surgery,Community Practice,Opioid Over-Prescriber,0.6074291573735382,56.03,136.1,1.97,123
+CPSO-101277,Geriatrics,Humber River Health,Opioid Over-Prescriber,0.6068495047096732,52.04,126.1,1.38,131
+CPSO-100308,Psychiatry,Sunnybrook HSC,Opioid Over-Prescriber,0.603641358898652,33.55,169.2,1.04,114
+CPSO-100558,Oncology,Sunnybrook HSC,Opioid Over-Prescriber,0.6024660804442693,37.89,178.2,5.2,128
+CPSO-100225,Internal Medicine,Scarborough Health Network,Opioid Over-Prescriber,0.600642349514529,29.69,154.4,4.89,88
+CPSO-100870,Family Medicine,Community Practice,Opioid Over-Prescriber,0.5993005854056793,32.55,258.3,3.88,51
+CPSO-101595,Family Medicine,Trillium Health Partners,Opioid Over-Prescriber,0.5977440610722735,34.94,131.0,3.81,142
+CPSO-101567,Emergency Medicine,Trillium Health Partners,High-Risk Combinations,0.5970864057182959,6.61,30.2,24.95,148
+CPSO-101107,Oncology,Sunnybrook HSC,Opioid Over-Prescriber,0.5951495077851208,56.3,112.4,0.0,143
+CPSO-101437,Oncology,Humber River Health,Opioid Over-Prescriber,0.5950256555967008,44.6,140.0,4.48,110
+CPSO-100313,Geriatrics,Trillium Health Partners,Opioid Over-Prescriber,0.5918956433868353,46.62,64.1,3.84,143
+CPSO-100884,Psychiatry,Sunnybrook HSC,High-Risk Combinations,0.5912628201849743,6.7,54.2,29.81,96
+CPSO-101786,Orthopedics,Humber River Health,Opioid Over-Prescriber,0.59063123604232,63.2,99.3,3.36,164
+CPSO-101101,Geriatrics,Community Practice,Opioid Over-Prescriber,0.5903284565552847,37.93,187.9,2.65,111
+CPSO-101480,Psychiatry,Unity Health,Volume Outlier,0.5815687908755418,15.04,52.1,5.75,426

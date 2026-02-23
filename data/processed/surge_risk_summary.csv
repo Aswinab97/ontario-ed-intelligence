@@ -1,0 +1,7 @@
+Hospital,Type,Avg Forecast (visits/day),Surge Threshold,Surge Days (next 30),Risk Level,First Surge Date
+Humber River Health,Community,264,243,24,HIGH,2025-01-01
+Trillium Health Partners,Community,353,325,24,HIGH,2025-01-01
+North York General,Community,283,262,23,HIGH,2025-01-01
+Sunnybrook HSC,Academic,434,400,22,HIGH,2025-01-01
+Unity Health (St. Michaels),Academic,380,362,22,HIGH,2025-01-01
+Scarborough Health Network,Community,321,300,22,HIGH,2025-01-01

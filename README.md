@@ -1,91 +1,153 @@
 # 🏥 Ontario ED Intelligence Platform
 
+<div align="center">
+
 > **AI-powered emergency department analytics for Ontario hospitals**
-> Built with real Statistics Canada data, Facebook Prophet, XGBoost, and SHAP explainability.
+> Surge forecasting · Health equity mapping · ALC bed block detection · Prescription anomaly detection
 
 [![CI Pipeline](https://github.com/Aswinab97/ontario-ed-intelligence/actions/workflows/ci.yml/badge.svg)](https://github.com/Aswinab97/ontario-ed-intelligence/actions)
-![Python](https://img.shields.io/badge/Python-3.10-blue)
+![Python](https://img.shields.io/badge/Python-3.10-blue?logo=python)
+![XGBoost](https://img.shields.io/badge/XGBoost-0.984_AUC-orange)
+![Prophet](https://img.shields.io/badge/Prophet-Surge_Forecasting-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen)
+
+</div>
 
 ---
 
 ## 🎯 Project Overview
 
-Ontario's emergency departments face a systemic crisis:
-- **137 surge days** predicted across 6 GTA hospitals in the next 30 days
-- **333 acute beds** currently blocked by ALC patients who should be in LTC
-- **Scarborough FSAs** show the worst health equity scores in the GTA (13.3/100)
-- **80 prescribers** flagged for anomalous opioid patterns across GTA hospitals
+Ontario's emergency departments face a systemic capacity crisis.
+This platform gives hospital operations teams and Ontario Health planners
+**actionable, explainable AI** - not black-box predictions.
 
-This platform provides hospital operations teams, Ontario Health planners, and clinical leadership with **actionable, explainable AI** — not black-box predictions.
+| Problem | This Platform's Answer |
+|---------|----------------------|
+| Which hospitals will surge this week? | Prophet time-series forecast - 7 to 30 day horizon |
+| Which neighbourhoods have the worst ED access? | GeoPandas FSA equity heatmap - 260 GTA zones |
+| Which patients are blocking acute beds? | XGBoost + SHAP ALC classifier - AUC 0.984 |
+| Which prescribers have abnormal opioid patterns? | Isolation Forest anomaly detector - 81.2% precision |
+
+---
+
+## 📸 Screenshots
+
+| GTA Health Equity Heatmap | ED Surge Dashboard |
+|---|---|
+| ![Equity Heatmap](reports/gta_equity_heatmap.png) | ![Surge Dashboard](reports/gta_surge_dashboard.png) |
+
+| ALC SHAP Explainability | Rx Anomaly Detection |
+|---|---|
+| ![ALC SHAP](reports/alc_shap_explainability.png) | ![Rx Anomaly](reports/rx_anomaly_detection.png) |
 
 ---
 
 ## 📊 Modules
 
-### Module 1 — ED Surge Forecaster
-> *"Which hospitals will be over capacity in the next 7 days?"*
+### Module 1 - ED Surge Forecaster
+> Which hospitals will be over capacity in the next 7 days?
 
-- **Model:** Facebook Prophet with Ontario statutory holiday effects
-- **Hospitals:** Sunnybrook, Unity Health, North York General, Scarborough Health Network, Humber River Health, Trillium Health Partners
+- **Model:** Facebook Prophet with Ontario statutory holiday regressors
+- **Hospitals:** Sunnybrook HSC, Unity Health, North York General, Scarborough Health Network, Humber River Health, Trillium Health Partners
 - **Result:** 137 surge days predicted across 6 hospitals in 30-day horizon
 
-![ED Surge Dashboard](reports/gta_surge_dashboard.png)
+![ED Trends](reports/ed_trends_by_hospital.png)
 
 ---
 
-### Module 2 — GTA Health Equity Heatmap
-> *"Which neighbourhoods have the worst ED access and health outcomes?"*
+### Module 2 - GTA Health Equity Heatmap
+> Which neighbourhoods have the worst ED access and health outcomes?
 
-- **Data:** Statistics Canada FSA Boundaries (2021) — real geographic data
+- **Data:** Statistics Canada FSA Boundaries 2021 - real geographic shapefile
 - **Coverage:** 260 Forward Sortation Areas across Greater Toronto Area
 - **Result:** Scarborough (M1W, M1N) confirmed as highest-need zones
 
-![GTA Equity Heatmap](reports/gta_equity_heatmap.png)
+![FSA Base Map](reports/gta_fsa_base_map.png)
 
 ---
 
-### Module 3 — ALC Bed Block Analyzer
-> *"Which patients are blocking acute beds and need discharge planning now?"*
+### Module 3 - ALC Bed Block Analyzer
+> Which patients are blocking acute beds and need discharge planning today?
 
-- **Model:** XGBoost classifier with SHAP explainability
-- **Performance:** ROC-AUC **0.984** | Average Precision **0.998**
-- **Result:** 333 beds blocked across 6 hospitals (up to 87.5% ALC rate)
-- **Top risk factors:** Age → Cognitive Impairment → Caregiver availability
+- **Model:** XGBoost binary classifier with SHAP explainability
+- **ROC-AUC:** 0.984 | **Average Precision:** 0.998
+- **Result:** 333 beds blocked across 6 hospitals
 
-![ALC SHAP](reports/alc_shap_explainability.png)
+Top 5 ALC risk factors by SHAP:
+1. Age - 2.6561
+2. Cognitive Impairment - 1.4064
+3. Has Caregiver - 0.9888
+4. Lives Alone - 0.8703
+5. Diagnosis - 0.7848
+
+![ALC Model Performance](reports/alc_model_performance.png)
 
 ---
 
-### Module 4 — Prescription Anomaly Detector
-> *"Which prescribers have unusual opioid or polypharmacy patterns?"*
+### Module 4 - Prescription Anomaly Detector
+> Which prescribers have unusual opioid or polypharmacy patterns?
 
-- **Model:** Isolation Forest (unsupervised anomaly detection)
+- **Model:** Isolation Forest unsupervised anomaly detection
 - **Coverage:** 2,000 prescribers across GTA hospitals and community settings
-- **Performance:** Precision **0.812** | Recall **0.812**
-- **Breakdown:** 22 opioid over-prescribers | 20 volume outliers | 18 high-risk combos
+- **Precision:** 0.812 | **Recall:** 0.812
 
-![Rx Anomaly Detection](reports/rx_anomaly_detection.png)
+Anomaly breakdown:
+- Opioid over-prescribers: 22 (27.5%)
+- Volume outliers: 20 (25.0%)
+- High-risk combinations: 18 (22.5%)
+- Other anomalies: 20 (25.0%)
+
+![Opioid Risk Quadrant](reports/rx_opioid_risk_quadrant.png)
+
+---
+
+## 📈 Key Results Summary
+
+| Module | Model | Key Metric | Result |
+|--------|-------|------------|--------|
+| ED Surge Forecaster | Facebook Prophet | Surge days (30-day) | **137 across 6 hospitals** |
+| Health Equity Heatmap | GeoPandas + Folium | FSAs analysed | **260 GTA zones** |
+| ALC Bed Block Analyzer | XGBoost + SHAP | ROC-AUC | **0.984** |
+| ALC Bed Block Analyzer | XGBoost + SHAP | Beds blocked | **333 across 6 hospitals** |
+| Rx Anomaly Detector | Isolation Forest | Precision / Recall | **0.812 / 0.812** |
+| Rx Anomaly Detector | Isolation Forest | Flagged prescribers | **80 of 2,000** |
+
+---
+
+## 🛠 Tech Stack
+
+| Category | Tools |
+|----------|-------|
+| Languages | Python 3.10 |
+| ML / Forecasting | XGBoost, Facebook Prophet, Isolation Forest, scikit-learn |
+| Explainability | SHAP TreeExplainer |
+| Geospatial | GeoPandas, Folium, Shapely |
+| Visualization | Matplotlib, Seaborn, Plotly |
+| Data Sources | Statistics Canada FSA 2021, Ontario Health open data |
+| Infrastructure | Docker, GitHub Actions CI/CD |
 
 ---
 
 ## 📁 Repository Structure
 
     ontario-ed-intelligence/
-    ├── .github/workflows/ci.yml
-    ├── data/
-    │   ├── raw/
-    │   └── processed/
-    ├── notebooks/
-    │   ├── 01_EDA_Ontario_ED.ipynb
-    │   ├── 02_ED_Surge_Forecaster.ipynb
-    │   ├── 03_ALC_Bed_Block_Analyzer.ipynb
-    │   └── 04_Rx_Anomaly_Detector.ipynb
-    ├── reports/
-    ├── tests/
-    ├── Dockerfile
-    └── requirements.txt
+    +-- .github/workflows/ci.yml
+    +-- data/
+    |   +-- raw/
+    |   +-- processed/
+    |       +-- surge_risk_summary.csv
+    |       +-- rx_audit_list.csv
+    +-- notebooks/
+    |   +-- 01_EDA_Ontario_ED.ipynb
+    |   +-- 02_ED_Surge_Forecaster.ipynb
+    |   +-- 03_ALC_Bed_Block_Analyzer.ipynb
+    |   +-- 04_Rx_Anomaly_Detector.ipynb
+    +-- reports/
+    +-- tests/
+    +-- Dockerfile
+    +-- requirements.txt
+    +-- README.md
 
 ---
 
@@ -100,67 +162,34 @@ This platform provides hospital operations teams, Ontario Health planners, and c
 
 ---
 
-## 📈 Key Results
-
-| Module | Model | Metric | Result |
-|--------|-------|--------|--------|
-| ED Surge Forecaster | Prophet | Surge days (30-day) | **137 across 6 hospitals** |
-| Equity Heatmap | GeoPandas | FSAs analysed | **260 GTA zones** |
-| ALC Bed Block | XGBoost | ROC-AUC | **0.984** |
-| ALC Bed Block | XGBoost | Beds blocked | **333 across 6 hospitals** |
-| Rx Anomaly | Isolation Forest | Precision | **0.812** |
-| Rx Anomaly | Isolation Forest | Flagged prescribers | **80 of 2,000** |
-
----
-
-## 🛠️ Tech Stack
-
-| Category | Tools |
-|----------|-------|
-| Languages | Python 3.10 |
-| ML / AI | XGBoost, Prophet, Isolation Forest, scikit-learn |
-| Explainability | SHAP |
-| Geospatial | GeoPandas, Folium |
-| Visualization | Matplotlib, Seaborn, Plotly |
-| Data | Statistics Canada (FSA 2021), Ontario Health |
-| Infrastructure | Docker, GitHub Actions CI/CD |
-
----
-
 ## 🏥 Ontario Health Context
 
-This project addresses four of Ontario Health's top strategic priorities:
-
-1. **ED Overcrowding** — Surge forecasting enables proactive staffing and diversion decisions
-2. **Health Equity** — FSA-level mapping identifies underserved Scarborough communities
-3. **ALC / LTC Pipeline** — Early ALC identification reduces hallway medicine and bed block
-4. **Opioid Crisis** — Prescriber anomaly detection supports CPSO audit prioritization
+| Priority | How This Platform Helps |
+|----------|------------------------|
+| **ED Overcrowding** | Surge forecasting enables proactive staffing and diversion decisions 7 days ahead |
+| **Health Equity** | FSA-level mapping identifies underserved Scarborough communities for targeted investment |
+| **ALC / LTC Pipeline** | Early ALC flag at admission enables same-day discharge planning and reduces hallway medicine |
+| **Opioid Crisis** | Prescriber anomaly detection surfaces outliers for CPSO audit prioritization |
 
 ---
 
-## 📊 All Report Outputs
+## ⚠️ Data Disclaimer
 
-| File | Module | Description |
-|------|--------|-------------|
-| gta_fsa_base_map.png | Module 2 | GTA FSA base layer map |
-| gta_equity_heatmap.png | Module 2 | Health equity choropleth |
-| ed_trends_by_hospital.png | Module 1 | 3-year ED visit trends |
-| ed_seasonality_patterns.png | Module 1 | Monthly and day-of-week patterns |
-| sunnybrook_forecast.png | Module 1 | 30-day forecast with surge flags |
-| gta_surge_dashboard.png | Module 1 | All 6 hospitals surge dashboard |
-| alc_distribution.png | Module 3 | ALC rates by hospital and diagnosis |
-| alc_model_performance.png | Module 3 | ROC curve, confusion matrix, score dist |
-| alc_shap_explainability.png | Module 3 | SHAP feature importance and beeswarm |
-| alc_beds_blocked_dashboard.png | Module 3 | Beds blocked by hospital |
-| rx_prescribing_patterns.png | Module 4 | Prescribing patterns by specialty |
-| rx_anomaly_detection.png | Module 4 | PCA and anomaly score distribution |
-| rx_opioid_risk_quadrant.png | Module 4 | Opioid MME vs rate risk quadrant |
+All patient, prescriber, and ED visit data is **synthetically generated**.
+No real patient data or personal health information (PHI) is used.
+Synthetic data is modelled on publicly available Ontario Health and Statistics Canada reports.
+
+Real data integration points for production:
+- NACRS for ED visit data
+- Ontario Drug Benefit (ODB) database for prescribing patterns
+- CIHI Discharge Abstract Database for ALC and LOS data
+- Statistics Canada FSA boundaries (already integrated - real shapefile)
 
 ---
 
 ## 👤 Author
 
-**Aswin** — Health Data Scientist
+**Aswin** - Health Data Scientist
 - 📍 Ontario, Canada
 - 🔗 [GitHub](https://github.com/Aswinab97)
 

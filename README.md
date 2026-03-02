@@ -270,7 +270,7 @@ az containerapp create \
 
 ---
 
-## ## 💻 Quick Start (Local)
+## 💻 Quick Start (Local)
 
 ```bash
 git clone https://github.com/Aswinab97/ontario-ed-intelligence.git

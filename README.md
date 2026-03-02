@@ -341,7 +341,7 @@ Real data integration points for production:
 
 ## 👤 Author
 
-**Aswin Asokan** — Health Data Scientist & ML Engineer
+**Aswin Anil Bindu** — Health Data Scientist & ML Engineer
 - 📍 Ontario, Canada
 - 🔗 [GitHub](https://github.com/Aswinab97)
 - 💼 [LinkedIn](https://www.linkedin.com/in/aswinab/)

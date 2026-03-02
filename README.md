@@ -64,7 +64,8 @@ This platform gives hospital operations teams and Ontario Health planners
 <br><br>
 
 ### 🔬 Live API Prediction — ALC Risk Score
-<img width="1512" alt="Live API Prediction" src="https://github.com/user-attachments/assets/a81855f0-ba18-43dc-b670-8afe95b39d11" />
+<img width="1512" height="982" alt="Screenshot 2026-03-02 at 12 20 47 AM" src="https://github.com/user-attachments/assets/bca6828d-e2e9-4a53-a1c0-1b1e7eab65a1" />
+
 
 </div>
 

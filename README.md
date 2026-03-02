@@ -69,6 +69,8 @@ This platform gives hospital operations teams and Ontario Health planners
 
 </div>
 
+---
+
 ## 📊 Modules
 
 ### Module 1 - ED Surge Forecaster
@@ -339,9 +341,10 @@ Real data integration points for production:
 
 ## 👤 Author
 
-**Aswin** - Health Data Scientist
+**Aswin Asokan** — Health Data Scientist & ML Engineer
 - 📍 Ontario, Canada
 - 🔗 [GitHub](https://github.com/Aswinab97)
+- 💼 [LinkedIn](https://www.linkedin.com/in/aswinab/)
 
 ---
 

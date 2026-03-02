@@ -142,7 +142,7 @@ if module == "🏠 Overview":
     for idx,(title,fname) in enumerate(images.items()):
         fpath = os.path.join("reports", fname)
         if os.path.exists(fpath):
-            cols[idx%2].image(fpath, caption=title, use_container_width=True)
+            cols[idx%2].image(fpath, caption=title, use_column_width=True)
 
 # ── MODULE 1 ───────────────────────────────────────────────────────────────────
 elif module == "📊 Module 1 — ED Surge Forecaster":
@@ -216,7 +216,7 @@ elif module == "🗺️ Module 2 — Health Equity Heatmap":
     ]:
         fpath = os.path.join("reports",fname)
         if os.path.exists(fpath):
-            col.image(fpath, caption=title, use_container_width=True)
+            col.image(fpath, caption=title, use_column_width=True)
     st.info("**Key finding:** Scarborough (M1N, M1W) equity score 13.3/100 vs North York 95.0/100. Clear east-west equity gradient across the GTA.")
 
 # ── MODULE 3 ───────────────────────────────────────────────────────────────────
@@ -233,26 +233,26 @@ elif module == "🛏️ Module 3 — ALC Bed Block Analyzer":
     tab1,tab2,tab3 = st.tabs(["📊 Distribution","🤖 Model Performance","🔍 SHAP"])
     with tab1:
         fpath = os.path.join("reports","alc_distribution.png")
-        if os.path.exists(fpath): st.image(fpath, use_container_width=True)
+        if os.path.exists(fpath): st.image(fpath, use_column_width=True)
         st.subheader("Beds Blocked by Hospital")
         beds_data = pd.DataFrame({
             "Hospital":      list(HOSPITALS_CONFIG.keys()),
             "Beds Blocked":  [63,63,57,52,51,47],
             "ALC Rate (%)":  [80.8,87.5,83.8,85.2,77.3,85.5],
         }).sort_values("Beds Blocked",ascending=False)
-        st.dataframe(beds_data, use_container_width=True, hide_index=True)
+        st.dataframe(beds_data, use_column_width=True, hide_index=True)
     with tab2:
         fpath = os.path.join("reports","alc_model_performance.png")
-        if os.path.exists(fpath): st.image(fpath, use_container_width=True)
+        if os.path.exists(fpath): st.image(fpath, use_column_width=True)
     with tab3:
         fpath = os.path.join("reports","alc_shap_explainability.png")
-        if os.path.exists(fpath): st.image(fpath, use_container_width=True)
+        if os.path.exists(fpath): st.image(fpath, use_column_width=True)
         shap_data = pd.DataFrame({
             "Rank":    [1,2,3,4,5],
             "Feature": ["Age","Cognitive Impairment","Has Caregiver","Lives Alone","Diagnosis"],
             "SHAP":    [2.6561,1.4064,0.9888,0.8703,0.7848],
         })
-        st.dataframe(shap_data, use_container_width=True, hide_index=True)
+        st.dataframe(shap_data, use_column_width=True, hide_index=True)
     st.markdown("---")
     st.subheader("🧮 ALC Risk Calculator")
     c1,c2,c3 = st.columns(3)
@@ -299,7 +299,7 @@ elif module == "💊 Module 4 — Rx Anomaly Detector":
     tab1,tab2,tab3 = st.tabs(["📊 Patterns","🔍 Anomaly Detection","📋 Audit List"])
     with tab1:
         fpath = os.path.join("reports","rx_prescribing_patterns.png")
-        if os.path.exists(fpath): st.image(fpath, use_container_width=True)
+        if os.path.exists(fpath): st.image(fpath, use_column_width=True)
     with tab2:
         c1,c2 = st.columns(2)
         for col,fname,title in [
@@ -307,18 +307,18 @@ elif module == "💊 Module 4 — Rx Anomaly Detector":
             (c2,"rx_opioid_risk_quadrant.png","Opioid Risk Quadrant"),
         ]:
             fpath = os.path.join("reports",fname)
-            if os.path.exists(fpath): col.image(fpath, caption=title, use_container_width=True)
+            if os.path.exists(fpath): col.image(fpath, caption=title, use_column_width=True)
         anom_df = pd.DataFrame({
             "Anomaly Type":  ["Opioid Over-Prescriber","Volume Outlier","Other Anomaly","High-Risk Combinations"],
             "Count":         [22,20,20,18],
             "Percentage":    ["27.5%","25.0%","25.0%","22.5%"],
             "Action":        ["CPSO referral","Billing audit","Manual review","Pharmacist alert"],
         })
-        st.dataframe(anom_df, use_container_width=True, hide_index=True)
+        st.dataframe(anom_df, use_column_width=True, hide_index=True)
     with tab3:
         processed_path = "data/processed/rx_audit_list.csv"
         if os.path.exists(processed_path):
-            st.dataframe(pd.read_csv(processed_path).head(20), use_container_width=True, hide_index=True)
+            st.dataframe(pd.read_csv(processed_path).head(20), use_column_width=True, hide_index=True)
         else:
             st.info("Run Notebook 04 to generate the audit list CSV")
         st.markdown("---")
@@ -335,4 +335,4 @@ elif module == "💊 Module 4 — Rx Anomaly Detector":
                 df_rx["specialty"].isin(spec_filter) &
                 df_rx["hospital"].isin(hosp_filter)
             ][["prescriber_id","specialty","hospital","opioid_rate_pct","avg_opioid_mme","patients_per_month"]]
-            st.dataframe(filtered.head(50), use_container_width=True, hide_index=True)
+            st.dataframe(filtered.head(50), use_column_width=True, hide_index=True)

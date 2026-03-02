@@ -13,10 +13,24 @@
 ![Python](https://img.shields.io/badge/Python-3.10-blue?logo=python)
 ![XGBoost](https://img.shields.io/badge/XGBoost-0.984_AUC-orange)
 ![Prophet](https://img.shields.io/badge/Prophet-Surge_Forecasting-blue)
+![Azure](https://img.shields.io/badge/Azure-Container_Apps-0078D4?logo=microsoftazure)
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen)
 
 </div>
+
+---
+
+## 🌐 Live Deployment
+
+> Deployed on **Azure Container Apps** — Canada Central 🍁
+
+| Service | URL |
+|---------|-----|
+| 📊 **Streamlit Dashboard** | https://ontario-ed-dashboard.icydune-b6841f56.canadacentral.azurecontainerapps.io |
+| 🔌 **FastAPI REST API** | https://ontario-ed-api.icydune-b6841f56.canadacentral.azurecontainerapps.io |
+| 📖 **API Swagger Docs** | https://ontario-ed-api.icydune-b6841f56.canadacentral.azurecontainerapps.io/docs |
 
 ---
 
@@ -35,35 +49,24 @@ This platform gives hospital operations teams and Ontario Health planners
 
 ---
 
----
-
-## 📸 Platform Preview
+## 📸 Live Platform Screenshots
 
 <div align="center">
 
-<img src="reports/gta_equity_heatmap.png" width="750"><br><br>
-<b>GTA Health Equity Heatmap</b>
+### 📊 Streamlit Dashboard
+<img width="1512" alt="Streamlit Dashboard" src="https://github.com/user-attachments/assets/b1d86d52-02a0-4993-8278-2f714dbd2993" />
 
 <br><br>
 
-<img src="reports/gta_surge_dashboard.png" width="750"><br><br>
-<b>ED Surge Forecast Dashboard</b>
+### 📖 FastAPI Swagger Docs
+<img width="1512" alt="Ontario ED Intelligence API" src="https://github.com/user-attachments/assets/897b3f7b-bd2d-4e61-87a6-5d426e3481e3" />
 
 <br><br>
 
-<img src="reports/alc_shap_explainability.png" width="750"><br><br>
-<b>ALC SHAP Explainability</b>
-
-<br><br>
-
-<img src="reports/rx_anomaly_detection.png" width="750"><br><br>
-<b>Prescription Anomaly Detection</b>
+### 🔬 Live API Prediction — ALC Risk Score
+<img width="1512" alt="Live API Prediction" src="https://github.com/user-attachments/assets/a81855f0-ba18-43dc-b670-8afe95b39d11" />
 
 </div>
-
----
-
----
 
 ## 📊 Modules
 
@@ -154,41 +157,157 @@ Anomaly breakdown:
 | Explainability | SHAP TreeExplainer |
 | Geospatial | GeoPandas, Folium, Shapely |
 | Visualization | Matplotlib, Seaborn, Plotly |
+| Dashboard | Streamlit |
+| API | FastAPI + Uvicorn |
+| Containerization | Docker, Docker Buildx (linux/amd64) |
+| Registry | Azure Container Registry (ACR) |
+| Deployment | Azure Container Apps — Canada Central |
+| CI/CD | GitHub Actions |
 | Data Sources | Statistics Canada FSA 2021, Ontario Health open data |
-| Infrastructure | Docker, GitHub Actions CI/CD |
+
+---
+
+## ☁️ Azure Deployment Architecture
+
+```
+GitHub Actions CI
+      │
+      ▼
+Docker Buildx (linux/amd64)
+      │
+      ▼
+Azure Container Registry (ontarioedregistry.azurecr.io)
+      │
+      ├──► ontario-ed-api:v1        (FastAPI — port 8000)
+      └──► ontario-ed-dashboard:v3  (Streamlit — port 8501)
+                    │
+                    ▼
+      Azure Container Apps Environment
+      ontario-ed-env — Canada Central
+      ┌─────────────────────────────────────────┐
+      │  ontario-ed-api                         │
+      │  https://ontario-ed-api.icydune-...     │
+      │  CPU: 0.5 | Memory: 1Gi                 │
+      ├─────────────────────────────────────────┤
+      │  ontario-ed-dashboard                   │
+      │  https://ontario-ed-dashboard.icydune.. │
+      │  CPU: 0.5 | Memory: 1Gi                 │
+      └─────────────────────────────────────────┘
+            Log Analytics Workspace
+            workspace-ontarioedrgBklL
+```
+
+---
+
+## 🚀 Deploy Your Own
+
+### Prerequisites
+- Azure CLI + Container Apps extension
+- Docker Desktop with Buildx
+- Azure subscription
+
+### 1 — Clone and configure
+```bash
+git clone https://github.com/Aswinab97/ontario-ed-intelligence.git
+cd ontario-ed-intelligence
+
+export ACR_NAME=ontarioedregistry
+export RESOURCE_GROUP=ontario-ed-rg
+export ENV_NAME=ontario-ed-env
+export LOCATION=canadacentral
+export API_APP=ontario-ed-api
+export DASH_APP=ontario-ed-dashboard
+```
+
+### 2 — Build and push images
+```bash
+az acr login --name $ACR_NAME
+
+docker buildx build --platform linux/amd64 \
+  -f Dockerfile.api \
+  -t $ACR_NAME.azurecr.io/ontario-ed-api:v1 --push .
+
+docker buildx build --platform linux/amd64 \
+  -f Dockerfile.dashboard \
+  -t $ACR_NAME.azurecr.io/ontario-ed-dashboard:v1 --push .
+```
+
+### 3 — Create environment and deploy
+```bash
+az containerapp env create \
+  --name $ENV_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --location $LOCATION
+
+ACR_PASSWORD=$(az acr credential show \
+  --name $ACR_NAME --query "passwords[0].value" --output tsv)
+
+az containerapp create \
+  --name $API_APP \
+  --resource-group $RESOURCE_GROUP \
+  --environment $ENV_NAME \
+  --image $ACR_NAME.azurecr.io/ontario-ed-api:v1 \
+  --registry-server $ACR_NAME.azurecr.io \
+  --registry-username $ACR_NAME \
+  --registry-password $ACR_PASSWORD \
+  --target-port 8000 --ingress external \
+  --cpu 0.5 --memory 1.0Gi
+
+az containerapp create \
+  --name $DASH_APP \
+  --resource-group $RESOURCE_GROUP \
+  --environment $ENV_NAME \
+  --image $ACR_NAME.azurecr.io/ontario-ed-dashboard:v1 \
+  --registry-server $ACR_NAME.azurecr.io \
+  --registry-username $ACR_NAME \
+  --registry-password $ACR_PASSWORD \
+  --target-port 8501 --ingress external \
+  --cpu 0.5 --memory 1.0Gi
+```
+
+---
+
+## 🚀 Quick Start (Local)
+
+```bash
+git clone https://github.com/Aswinab97/ontario-ed-intelligence.git
+cd ontario-ed-intelligence
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+jupyter notebook
+```
 
 ---
 
 ## 📁 Repository Structure
 
-    ontario-ed-intelligence/
-    +-- .github/workflows/ci.yml
-    +-- data/
-    |   +-- raw/
-    |   +-- processed/
-    |       +-- surge_risk_summary.csv
-    |       +-- rx_audit_list.csv
-    +-- notebooks/
-    |   +-- 01_EDA_Ontario_ED.ipynb
-    |   +-- 02_ED_Surge_Forecaster.ipynb
-    |   +-- 03_ALC_Bed_Block_Analyzer.ipynb
-    |   +-- 04_Rx_Anomaly_Detector.ipynb
-    +-- reports/
-    +-- tests/
-    +-- Dockerfile
-    +-- requirements.txt
-    +-- README.md
-
----
-
-## 🚀 Quick Start
-
-    git clone https://github.com/Aswinab97/ontario-ed-intelligence.git
-    cd ontario-ed-intelligence
-    python -m venv venv
-    source venv/bin/activate
-    pip install -r requirements.txt
-    jupyter notebook
+```
+ontario-ed-intelligence/
+├── .github/workflows/ci.yml
+├── Dockerfile.api
+├── Dockerfile.dashboard
+├── data/
+│   ├── raw/
+│   └── processed/
+│       ├── surge_risk_summary.csv
+│       └── rx_audit_list.csv
+├── notebooks/
+│   ├── 01_EDA_Ontario_ED.ipynb
+│   ├── 02_ED_Surge_Forecaster.ipynb
+│   ├── 03_ALC_Bed_Block_Analyzer.ipynb
+│   └── 04_Rx_Anomaly_Detector.ipynb
+├── reports/
+├── screenshots/
+│   ├── dashboard.png
+│   ├── api-docs.png
+│   └── api-test.png
+├── tests/
+├── app.py
+├── main.py
+├── requirements.txt
+└── README.md
+```
 
 ---
 

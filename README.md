@@ -48,6 +48,28 @@ Ontario's health system requires integrated, scalable analytics to mitigate fron
 
 ---
 
+## 📸 Live Platform Screenshots
+
+<div align="center">
+
+### 📊 Streamlit Dashboard
+<img width="1512" alt="Streamlit Dashboard" src="https://github.com/user-attachments/assets/b1d86d52-02a0-4993-8278-2f714dbd2993" />
+
+<br><br>
+
+### 📖 FastAPI Swagger Docs
+<img width="1512" alt="Ontario ED Intelligence API" src="https://github.com/user-attachments/assets/897b3f7b-bd2d-4e61-87a6-5d426e3481e3" />
+
+<br><br>
+
+### 🔬 Live API Prediction — ALC Risk Score
+<img width="1512" height="982" alt="Screenshot 2026-03-02 at 12 20 47 AM" src="https://github.com/user-attachments/assets/bca6828d-e2e9-4a53-a1c0-1b1e7eab65a1" />
+
+
+</div>
+
+---
+
 ## 📊 Analytics Architecture & System Design
 
 ### 🏠 Executive Operations Center & System Metrics

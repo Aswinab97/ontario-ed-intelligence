@@ -352,20 +352,20 @@ ontario-ed-intelligence/
 
 ⚙️ Quick Start (Local Environment)
 
-### Clone repository
+Clone repository
 git clone [https://github.com/Aswinab97/ontario-ed-intelligence.git](https://github.com/Aswinab97/ontario-ed-intelligence.git)
 cd ontario-ed-intelligence
 
-### Install dependencies
+Install dependencies
 pip install -r requirements.txt
 
-### Compile and Seed the Relational Star Schema Database
+Compile and Seed the Relational Star Schema Database
 python database/create_database.py
 
-### Launch Streamlit dashboard (Includes the SQL Warehouse Explorer page)
+Launch Streamlit dashboard (Includes the SQL Warehouse Explorer page)
 streamlit run app.py
 
-### Launch FastAPI inference gateway (separate terminal)
+Launch FastAPI inference gateway (separate terminal)
 uvicorn main:app --reload
 
 

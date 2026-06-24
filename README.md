@@ -150,259 +150,221 @@ Mirrors the real data stewardship and cleanup work health information management
 
 ---
 
-### 🔐 7. Data Infrastructure & SQL Warehouse Layer
+### 🗄️ 7. Relational Star Schema Data Warehouse
 
-Demonstrates engineering-level understanding of Ontario's clinical storage architectures and relational schema design.
+The data infrastructure layer has transitioned from standard flat-file CSV pipelines into a robust, structured **Relational Star Schema Data Warehouse** engineered with **SQLite**. This architecture mirrors real-world Ontario administrative clinical environments (CIHI DAD/NACRS) where transactional hospital logs are aggregated into analytical data stores.
 
-**Provincial Administrative Data Flow:**
-
+#### 🗺️ Data Warehouse Lineage Flow
 ```
 [ Patient Arrives at ED ]
-           │
-           ▼
+│
+▼
 [ CTAS Triage Evaluated ] ──► Captured in CIHI NACRS Registry
-           │
- Is Inpatient Admission Required?
-       ├──► NO  ──► Discharged ──► NACRS Record Closed
-       └──► YES ──► Transferred to Acute Bed
-                           │
-                           ▼
-                  Initiates CIHI DAD Registry
-                           │
-                  Track Inpatient LOS & ALC Status
-                           │
-                           ▼
-                  Closed Upon Abstract Discharge
+│
+Is Inpatient Admission Required?
+├──► NO  ──► Discharged ──► NACRS Record Closed
+└──► YES ──► Transferred to Acute Bed
+│
+▼
+Initiates CIHI DAD Registry
+│
+Track Inpatient LOS & ALC Status
+│
+▼
+Closed Upon Abstract Discharge
 ```
 
-**PHI De-Identification Matrix (PHIPA Compliant):**
+---
 
-| Variable Class | Raw EMR Source (PHI) | De-Identified Analytical Layer |
-|:---|:---|:---|
-| Patient Name | John Doe | MASKED / NULL |
-| Date of Birth | 1948-11-23 | NULL (Suppressed) |
-| OHIP Health Card | 9876-543-210-XM | PID-80924 (SHA-256 Hash) |
-| Residential Location | M5G 1X8 (Downtown Toronto) | FSA Region: M5G (Aggregated) |
-| Exact Age | 77.58 | Age Group: 75–84 (Categorical Bucket) |
+#### 📐 Relational Schema Architecture
+The warehouse implements an optimized Star Schema separating high-velocity operational facts from descriptive spatial metadata:
+```
+       ┌────────────────────────────────┐
+       │     dim_hospital (Dimension)   │
+       ├────────────────────────────────┤
+       │  PK  │ hospital_id (TEXT)      │
+       │      │ hospital_name (TEXT)    │
+       │      │ region (TEXT)           │
+       └───────────────┬────────────────┘
+                       │ 1
+                       │
+                       │ ∞
+┌─────────────────────────▼─────────────────────────┐
+│             fact_operations (Fact Table)          │
+├───────────────────────────────────────────────────┤
+│  PK  │ fact_id (INTEGER - AUTOINCREMENT)          │
+│  FK  │ hospital_id (TEXT)                         │
+│      │ date (TEXT)                                │
+│      │ total_ed_visits (INTEGER)                  │
+│      │ mean_wait_time_hours (REAL)                │
+│      │ admission_rate (REAL)                      │
+│      │ bed_occupancy_rate (REAL)                  │
+│      │ mean_los_days (REAL)                       │
+│      │ active_alc_beds (INTEGER)                  │
+│      │ readmission_rate_30d (REAL)                │
+│      │ lwbs_rate (REAL)                           │
+└───────────────────────────────────────────────────┘
 
-**Star-Schema SQL Warehouse Design:**
+```
+
+#### 🔍 Interactive Live SQL Explorer UI
+The application includes a production-grade **Healthcare SQL Warehouse Explorer** built into the Streamlit front-end. This module allows technical recruiters, data leads, and analysts to audit the underlying infrastructure natively:
+* **Live Metadata Inspector:** Visualizes physical table schemas, column data types, and primary/foreign key relationships in real time.
+* **Pre-Loaded Analytical Templates:** Features complex, pre-written diagnostic SQL queries optimized to pinpoint systemic hospital logjams (e.g., measuring "Exit-Block Bottlenecks" by matching high bed-occupancy ceilings against active ALC bed counts).
+* **Dynamic Ad-Hoc Engine:** Provides a secure text canvas to write, compile, and execute raw SQL syntax directly against the SQLite engine, instantly outputting structured DataFrames alongside automated interactive visualizations.
 
 ```sql
--- Query A: LOS & 30-Day Readmission Rate by ICD-10 Diagnostic Classification
-SELECT
-    v.ICD10_DiagnosisCode                                          AS [ICD-10 Clinical Diagnosis],
-    COUNT(v.VisitKey)                                              AS [Total Admitted Inpatient Cases],
-    ROUND(AVG(v.Inpatient_LOS_Days), 2)                           AS [Mean Inpatient LOS (Days)],
-    ROUND(SUM(CAST(v.Readmit_30D_Flag AS FLOAT))
-          / COUNT(v.VisitKey) * 100, 2)                           AS [30D Readmission Rate (%)]
-FROM fact_ed_visits v
-WHERE v.Inpatient_LOS_Days IS NOT NULL
-GROUP BY v.ICD10_DiagnosisCode
-ORDER BY [Mean Inpatient LOS (Days)] DESC;
-
--- Query B: Triage Velocity & Admission Conversion by CTAS Level
-SELECT
-    v.CTAS_Level                                                   AS [Canadian Triage Acuity Scale],
-    COUNT(v.VisitKey)                                              AS [Total Incident Encounters],
-    ROUND(AVG(v.Wait_Time_Hours), 2)                              AS [Mean Front-Door Wait Time (Hours)],
-    ROUND(SUM(CAST(v.ALC_Status_Flag AS FLOAT))
-          / COUNT(v.VisitKey) * 100, 2)                           AS [Conversion to Admission Rate (%)]
-FROM fact_ed_visits v
-GROUP BY v.CTAS_Level
-ORDER BY v.CTAS_Level ASC;
+-- Production Template Example: Exit-Block Throughput Gridlock Analysis
+SELECT 
+    h.hospital_name AS [Facility Name],
+    f.date AS [Reporting Month],
+    f.bed_occupancy_rate AS [Bed Occupancy (%)],
+    f.active_alc_beds AS [Blocked ALC Beds],
+    f.mean_wait_time_hours AS [ED Front-Door Wait Time (Hrs)]
+FROM fact_operations f
+JOIN dim_hospital h ON f.hospital_id = h.hospital_id
+WHERE f.bed_occupancy_rate > 90.0 AND f.active_alc_beds > 40
+ORDER BY f.mean_wait_time_hours DESC;
 ```
 
-> **Note:** The warehouse schema is modelled in Python/pandas for demonstration purposes. The SQL queries above reflect production-equivalent logic for a CIHI-aligned star schema warehouse.
-
----
-
-### 🗺️ 8. Geospatial Health Equity Mapping
-
+🗺️ 8. Geospatial Health Equity Mapping
 Neighborhood-level structural access barrier analysis across regional GTA territories.
-
-- **Data:** Statistics Canada FSA 2021 digital boundary polygon shapefiles
-- **Scope:** 260 unique GTA Forward Sortation Areas
-- **Result:** Stark east-west equity gradient confirmed — Scarborough M1N/M1W at 13.3/100 vs North York at 95.0/100
-
-<div align="center">
-<img src="reports/gta_fsa_base_map.png" width="750">
-</div>
+Data: Statistics Canada FSA 2021 digital boundary polygon shapefiles
+Scope: 260 unique GTA Forward Sortation Areas
+Result: Stark east-west equity gradient confirmed — Scarborough M1N/M1W at 13.3/100 vs North York at 95.0/100
 
 ---
 
-### 🛏️ 9. Inpatient ALC Bed Block Risk Prediction
-
+🛏️ 9. Inpatient ALC Bed Block Risk Prediction
 Identifies patients at risk of becoming Alternate Level of Care on day of admission — before the bed block occurs.
-
-- **Model:** XGBoost binary classifier + SHAP TreeExplainer (non-black-box risk surfacing)
-- **Training Cohort:** 8,000 patient admission records
-- **Performance:** ROC-AUC **0.984** | Average Precision **0.998**
-- **Result:** 333 active bed block scenarios isolated across 6 GTA facilities
-
-**Top SHAP Risk Drivers:**
-
-| Rank | Feature | SHAP Value |
-|:---|:---|:---|
-| 1 | Age | 2.6561 |
-| 2 | Cognitive Impairment | 1.4064 |
-| 3 | Has Caregiver | 0.9888 |
-| 4 | Lives Alone | 0.8703 |
-| 5 | Diagnosis Category | 0.7848 |
-
+Model: XGBoost binary classifier + SHAP TreeExplainer (non-black-box risk surfacing)
+Training Cohort: 8,000 patient admission records
+Performance: ROC-AUC 0.984 | Average Precision 0.998
+Result: 333 active bed block scenarios isolated across 6 GTA facilities
+Top SHAP Risk Drivers:
+Rank	Feature	SHAP Value
+1	Age	2.6561
+2	Cognitive Impairment	1.4064
+3	Has Caregiver	0.9888
+4	Lives Alone	0.8703
+5	Diagnosis Category	0.7848
 Live interactive ALC Risk Calculator available directly in the dashboard.
 
-<div align="center">
-<img src="reports/alc_model_performance.png" width="750">
-</div>
-
 ---
 
-### 💊 10. Controlled Substance Audit Engine
-
+💊 10. Controlled Substance Audit Engine
 Prescribing pattern anomaly detection across regional provider cohorts.
-
-- **Model:** Isolation Forest unsupervised outlier detection framework
-- **Scope:** 2,000 active provider IDs across 6 hospital networks + community practice
-- **Performance:** Precision **0.812** | Recall **0.812**
-
-| Anomaly Type | Count | Share | Remediation Pathway |
-|:---|:---|:---|:---|
-| Opioid Over-Prescriber | 22 | 27.5% | CPSO Referral |
-| Volume Outlier | 20 | 25.0% | Billing Audit |
-| High-Risk Drug Combinations | 18 | 22.5% | Pharmacist Alert |
-| Other Pattern Anomaly | 20 | 25.0% | Manual Review |
-
-<div align="center">
-<img src="reports/rx_opioid_risk_quadrant.png" width="750">
-</div>
+Model: Isolation Forest unsupervised outlier detection framework
+Scope: 2,000 active provider IDs across 6 hospital networks + community practice
+Performance: Precision 0.812 | Recall 0.812
+Anomaly Type	Count	Share	Remediation Pathway
+Opioid Over-Prescriber	22	27.5%	CPSO Referral
+Volume Outlier	20	25.0%	Billing Audit
+High-Risk Drug Combinations	18	22.5%	Pharmacist Alert
+Other Pattern Anomaly	20	25.0%	Manual Review
 
 ---
 
-## 🏥 Ontario Healthcare Analyst Case Studies
-
-### Case Study 1 — Why Are ED Wait Times Increasing?
-
-**Problem:** System-wide mean wait time increased 34% over 4 months.
-
-**Analysis:**
-- Bed occupancy crossed the critical 92% threshold at 4 of 6 facilities
-- ALC patient volume increased 28% over the same period
-- CTAS 3/4 waits elevated disproportionately — inpatient blocks slowing ED throughput, not patient arrivals
-
-**Strategic Recommendation:** Root cause is back-door gridlock, not front-door volume. Escalate LTC placement coordination. Automate bed escalation protocols when occupancy breaches 92%. Monitor ALC volume daily.
-
----
-
-### Case Study 2 — Which Patients Drive the Longest LOS?
-
-**Problem:** Acute inpatient LOS trending upward, straining available bed supply.
-
-**Analysis:**
-- F03 Dementia patients averaging 2.4x system mean LOS
-- 54.2% of ALC-blocked beds attributed to cognitive decline and geriatric profiles
-- Charlson Comorbidity Index >4 strongly correlated with extended stay durations
-
-**Strategic Recommendation:** Flag dementia and stroke admissions for social work review within 24 hours of admission. Initiate LTC placement referral at admission — not at discharge.
+🏥 Ontario Healthcare Analyst Case Studies
+Case Study 1 — Why Are ED Wait Times Increasing?
+Problem: System-wide mean wait time increased 34% over 4 months.
+Analysis:
+Bed occupancy crossed the critical 92% threshold at 4 of 6 facilities
+ALC patient volume increased 28% over the same period
+CTAS 3/4 waits elevated disproportionately — inpatient blocks slowing ED throughput, not patient arrivals
+Strategic Recommendation: Root cause is back-door gridlock, not front-door volume. Escalate LTC placement coordination. Automate bed escalation protocols when occupancy breaches 92%. Monitor ALC volume daily.
+Case Study 2 — Which Patients Drive the Longest LOS?
+Problem: Acute inpatient LOS trending upward, straining available bed supply.
+Analysis:
+F03 Dementia patients averaging 2.4x system mean LOS
+54.2% of ALC-blocked beds attributed to cognitive decline and geriatric profiles
+Charlson Comorbidity Index >4 strongly correlated with extended stay durations
+Strategic Recommendation: Flag dementia and stroke admissions for social work review within 24 hours of admission. Initiate LTC placement referral at admission — not at discharge.
+Case Study 3 — Which Facility Has the Highest Readmission Risk?
+Problem: 30-day readmission rate variance spans 14.5% (Scarborough) vs 7.8% (North York General).
+Analysis:
+Scarborough patient cohort shows a higher proportion of 65+ age group
+ICD-10 profile skewed toward CHF (I50) and COPD (J44) — both high-readmission diagnoses
+Post-discharge follow-up gap likely contributing to early return events
+Strategic Recommendation: Implement structured discharge checklists for CHF/COPD patients. Increase 7-day post-discharge phone follow-up frequency at Scarborough. Benchmark protocols against North York General.
 
 ---
 
-### Case Study 3 — Which Facility Has the Highest Readmission Risk?
-
-**Problem:** 30-day readmission rate variance spans 14.5% (Scarborough) vs 7.8% (North York General).
-
-**Analysis:**
-- Scarborough patient cohort shows a higher proportion of 65+ age group
-- ICD-10 profile skewed toward CHF (I50) and COPD (J44) — both high-readmission diagnoses
-- Post-discharge follow-up gap likely contributing to early return events
-
-**Strategic Recommendation:** Implement structured discharge checklists for CHF/COPD patients. Increase 7-day post-discharge phone follow-up frequency at Scarborough. Benchmark protocols against North York General.
-
----
-
-## 🛠️ Technical Infrastructure
-
-| Layer | Technologies & Tools |
-|:---|:---|
-| **Languages & Core** | Python 3.10 · NumPy · Pandas |
-| **ML & Forecasting** | XGBoost · Facebook Prophet · scikit-learn (Isolation Forest) |
-| **Model Explainability** | SHAP (SHapley Additive exPlanations) |
-| **Geospatial Processing** | GeoPandas · Folium · Shapely · Fiona |
-| **Application & Server** | Streamlit · FastAPI REST Framework · Uvicorn ASGI Server |
-| **Cloud & DevOps** | Docker · Azure Container Registry · Azure Container Apps · GitHub Actions CI/CD |
-| **Data Governance** | Custom schema validation · PHIPA-compliant PHI de-identification framework |
+🛠️ Technical Infrastructure
+Layer	Technologies & Tools
+Warehouse / Core Engine	SQLite · Relational Star Schema (Fact / Dimension Mapping)
+Languages & Core	Python 3.10 · NumPy · Pandas · SQL (Structured Query Language)
+ML & Forecasting	XGBoost · Facebook Prophet · scikit-learn (Isolation Forest)
+Model Explainability	SHAP (SHapley Additive exPlanations)
+Geospatial Processing	GeoPandas · Folium · Shapely · Fiona
+Application & Server	Streamlit (Multi-page App + SQL Explorer Canvas) · FastAPI · Uvicorn
+Cloud & DevOps	Docker · Azure Container Registry · Azure Container Apps · GitHub Actions CI/CD
+Data Governance	Custom schema validation · PHIPA-compliant PHI de-identification framework
 
 ---
 
-## 📁 Repository Structure
-
-```text
+📁 Repository Structure
+```
 ontario-ed-intelligence/
 ├── .github/
-│   └── workflows/ci.yml        <- Automated linting and image deployment pipelines
+│   └── workflows/ci.yml         <- Automated linting and image deployment pipelines
+├── database/                    <- SQL Relational Warehouse Layer
+│   ├── healthcare_warehouse.db  <- Compiled local SQLite relational database
+│   └── create_database.py       <- ETL pipeline script parsing & seeding star schema
 ├── data/
-│   ├── raw/                    <- Immutable raw baseline variables
-│   └── processed/              <- Downstream calculated data assets
+│   ├── raw/                     <- Immutable raw baseline variables
+│   └── processed/               <- Downstream calculated data assets
 │       ├── surge_risk_summary.csv
 │       └── rx_audit_list.csv
-├── notebooks/                  <- Model exploration, training, and EDA notebooks
+├── notebooks/                   <- Model exploration, training, and EDA notebooks
 │   ├── 01_EDA_Ontario_ED.ipynb
 │   ├── 02_ED_Surge_Forecaster.ipynb
 │   ├── 03_ALC_Bed_Block_Analyzer.ipynb
 │   └── 04_Rx_Anomaly_Detector.ipynb
-├── reports/                    <- Stored visualizations and geospatial heatmaps
-├── app.py                      <- Consolidated Streamlit multi-module dashboard
-├── main.py                     <- Asynchronous FastAPI backend server
-├── Dockerfile.api              <- Multi-stage build recipe for API image
-├── Dockerfile.dashboard        <- Multi-stage build recipe for dashboard image
+├── reports/                     <- Stored visualizations and geospatial heatmaps
+├── app.py                       <- Streamlit multi-module dashboard & SQL Explorer UI
+├── main.py                      <- Asynchronous FastAPI backend server
+├── Dockerfile.api               <- Multi-stage build recipe for API image
+├── Dockerfile.dashboard         <- Multi-stage build recipe for dashboard image
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## ⚙️ Quick Start (Local Environment)
+⚙️ Quick Start (Local Environment)
 
-```bash
 # Clone repository
-git clone https://github.com/Aswinab97/ontario-ed-intelligence.git
+git clone [https://github.com/Aswinab97/ontario-ed-intelligence.git](https://github.com/Aswinab97/ontario-ed-intelligence.git)
 cd ontario-ed-intelligence
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Launch Streamlit dashboard
+# Compile and Seed the Relational Star Schema Database
+python database/create_database.py
+
+# Launch Streamlit dashboard (Includes the SQL Warehouse Explorer page)
 streamlit run app.py
 
 # Launch FastAPI inference gateway (separate terminal)
 uvicorn main:app --reload
-```
+
 
 ---
 
-## ⚠️ Data Governance, Privacy & Compliance
-
-All patient traits, provider identifiers, and operational volumes used in this platform are **synthetically modelled** using non-identifiable provincial distributions. No Protected Health Information (PHI) or corporate records were ingested. This platform is fully compliant with the *Personal Health Information Protection Act (PHIPA)*.
-
+⚠️ Data Governance, Privacy & Compliance
+All patient traits, provider identifiers, and operational volumes used in this platform are synthetically modelled using non-identifiable provincial distributions. No Protected Health Information (PHI) or corporate records were ingested. This platform is fully compliant with the Personal Health Information Protection Act (PHIPA).
 Real data integration points for a live production migration environment:
-
-- **NACRS** — National Ambulatory Care Reporting System (emergency encounter feeds)
-- **DAD** — Discharge Abstract Database (inpatient LOS and clinical abstract records)
-- **ODB** — Ontario Drug Benefit System (pharmacy dispensing and prescriber validation registers)
-
----
-
-## 👤 Author
-
-**Aswin Anil Bindu** — Healthcare Data & AI Analyst · Ontario, Canada
-
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-aswinab-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/aswinab/)
-[![GitHub](https://img.shields.io/badge/GitHub-Aswinab97-181717?logo=github&logoColor=white)](https://github.com/Aswinab97)
-[![Portfolio](https://img.shields.io/badge/Portfolio-aswinab97.github.io-FF5722)](https://aswinab97.github.io/aswin-portfolio/)
+NACRS — National Ambulatory Care Reporting System (emergency encounter feeds)
+DAD — Discharge Abstract Database (inpatient LOS and clinical abstract records)
+ODB — Ontario Drug Benefit System (pharmacy dispensing and prescriber validation registers)
 
 ---
 
-## 📄 License
 
-Distributed under the open terms of the [MIT License](LICENSE).
-
+👤 Author
+Aswin Anil Bindu — Healthcare Data & AI Analyst · Ontario, Canada
+📄 License
+Distributed under the open terms of the MIT License.
 Contains information adapted from Statistics Canada Open Government Licence frameworks and Ontario Health open data repository metrics.

@@ -378,7 +378,9 @@ All patient traits, provider identifiers, and operational volumes used in this p
 Real data integration points for a live production migration environment:
 
 NACRS — National Ambulatory Care Reporting System (emergency encounter feeds)
+
 DAD — Discharge Abstract Database (inpatient LOS and clinical abstract records)
+
 ODB — Ontario Drug Benefit System (pharmacy dispensing and prescriber validation registers)
 
 ---

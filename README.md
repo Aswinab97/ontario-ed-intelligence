@@ -24,7 +24,7 @@
 
 ## 📌 Platform Intent & Overview
 
-Ontario hospitals face two simultaneous crises: **front-door overcrowding** (patients can't get in) and **back-door gridlock** (patients can't get out). This platform connects both sides of that problem combining operational reporting that hospital analysts use every day with predictive ML models that surface risk before it becomes a crisis.
+Ontario hospitals face two simultaneous crises: **front-door overcrowding** (patients can't get in) and **back-door gridlock** (patients can't get out). This platform connects both sides of that problem — combining operational reporting that hospital analysts use every day with predictive ML models that surface risk before it becomes a crisis.
 
 Built to mirror the actual decision-support and performance-reporting workflows at Ontario Health, CIHI, regional OHTs, and prominent hospital networks.
 

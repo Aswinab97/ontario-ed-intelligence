@@ -228,21 +228,26 @@ ORDER BY f.mean_wait_time_hours DESC;
 ```
 
 🗺️ 8. Geospatial Health Equity Mapping
+
 Neighborhood-level structural access barrier analysis across regional GTA territories.
 Data: Statistics Canada FSA 2021 digital boundary polygon shapefiles
 Scope: 260 unique GTA Forward Sortation Areas
+
 Result: Stark east-west equity gradient confirmed — Scarborough M1N/M1W at 13.3/100 vs North York at 95.0/100
 
 ---
 
 🛏️ 9. Inpatient ALC Bed Block Risk Prediction
+
 Identifies patients at risk of becoming Alternate Level of Care on day of admission — before the bed block occurs.
 Model: XGBoost binary classifier + SHAP TreeExplainer (non-black-box risk surfacing)
 Training Cohort: 8,000 patient admission records
 Performance: ROC-AUC 0.984 | Average Precision 0.998
 Result: 333 active bed block scenarios isolated across 6 GTA facilities
 Top SHAP Risk Drivers:
-Rank	Feature	SHAP Value
+
+| Rank	| | Feature |	| SHAP | | Value |
+|:---|:---|:---|:---|:---|
 1	Age	2.6561
 2	Cognitive Impairment	1.4064
 3	Has Caregiver	0.9888

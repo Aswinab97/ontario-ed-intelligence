@@ -106,6 +106,7 @@ Serves as the primary system entry page, aggregating cross-facility performance 
 ---
 
 ## 📁 Repository Structure
+
 ontario-ed-intelligence/
 ├── .github/workflows/ci.yml   <- Automated CI linting & compilation
 ├── Dockerfile.api             <- Multistage Docker recipe for FastAPI service

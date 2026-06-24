@@ -107,35 +107,32 @@ Serves as the primary system entry page, aggregating cross-facility performance 
 
 ## 📁 Repository Structure
 
+```
 ontario-ed-intelligence/
-├── .github/
-│ └── workflows/
-│ └── ci.yml # Automated CI linting & compilation
-│
-├── Dockerfile.api # Multistage Docker recipe for FastAPI service
-├── Dockerfile.dashboard # Multistage Docker recipe for Streamlit client
-├── fact_operations.csv # Executive Dashboard Data Layer (Operational Matrix)
-│
+├── .github/workflows/ci.yml
+├── Dockerfile.api
+├── Dockerfile.dashboard
 ├── data/
-│ ├── raw/
-│ └── processed/
-│ ├── surge_risk_summary.csv
-│ └── rx_audit_list.csv
-│
+│   ├── raw/
+│   └── processed/
+│       ├── surge_risk_summary.csv
+│       └── rx_audit_list.csv
 ├── notebooks/
-│ ├── 01_EDA_Ontario_ED.ipynb
-│ ├── 02_ED_Surge_Forecaster.ipynb
-│ ├── 03_ALC_Bed_Block_Analyzer.ipynb
-│ └── 04_Rx_Anomaly_Detector.ipynb
-│
+│   ├── 01_EDA_Ontario_ED.ipynb
+│   ├── 02_ED_Surge_Forecaster.ipynb
+│   ├── 03_ALC_Bed_Block_Analyzer.ipynb
+│   └── 04_Rx_Anomaly_Detector.ipynb
 ├── reports/
 ├── screenshots/
+│   ├── dashboard.png
+│   ├── api-docs.png
+│   └── api-test.png
 ├── tests/
-│
-├── app.py # Complete Professional Command Suite Entrypoint
-├── main.py # API Endpoint Handler
+├── app.py
+├── main.py
 ├── requirements.txt
 └── README.md
+```
 
 ---
 

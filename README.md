@@ -1,13 +1,13 @@
 <div align="center">
     
-# 🏥 Ontario ED Intelligence Platform
+# 🏥 Ontario Healthcare Intelligence Platform
 
 </div>
 
 <div align="center">
 
-> **AI-powered emergency department analytics for Ontario hospitals**
-> Surge forecasting · Health equity mapping · ALC bed block detection · Prescription anomaly detection
+> **Provincial Hospital Operations Center & Clinical Machine Learning Suite**
+> Performance Analytics · Throughput Forecasting · Geospatial Equity · Inpatient Risk Tracking · Controlled Substance Auditing
 
 [![CI Pipeline](https://github.com/Aswinab97/ontario-ed-intelligence/actions/workflows/ci.yml/badge.svg)](https://github.com/Aswinab97/ontario-ed-intelligence/actions)
 ![Python](https://img.shields.io/badge/Python-3.10-blue?logo=python)
@@ -28,7 +28,7 @@
 
 | Service | URL |
 |---------|-----|
-| 📊 **Streamlit Dashboard** | https://ontario-ed-dashboard.icydune-b6841f56.canadacentral.azurecontainerapps.io |
+| 🏥 **Executive Operations Dashboard** | https://ontario-ed-dashboard.icydune-b6841f56.canadacentral.azurecontainerapps.io |
 | 🔌 **FastAPI REST API** | https://ontario-ed-api.icydune-b6841f56.canadacentral.azurecontainerapps.io |
 | 📖 **API Swagger Docs** | https://ontario-ed-api.icydune-b6841f56.canadacentral.azurecontainerapps.io/docs |
 
@@ -36,260 +36,81 @@
 
 ## 🎯 Project Overview
 
-Ontario's emergency departments face a systemic capacity crisis.
-This platform gives hospital operations teams and Ontario Health planners
-**actionable, explainable AI** - not black-box predictions.
+Ontario's health system requires integrated, scalable analytics to mitigate front-door overcrowding and back-door gridlock. Moving beyond isolated predictive experiments, this platform serves as a unified command infrastructure linking real geospatial boundary markers, downstream operational datasets, and advanced explainable machine learning models.
 
-| Problem | This Platform's Answer |
-|---------|----------------------|
-| Which hospitals will surge this week? | Prophet time-series forecast - 7 to 30 day horizon |
-| Which neighbourhoods have the worst ED access? | GeoPandas FSA equity heatmap - 260 GTA zones |
-| Which patients are blocking acute beds? | XGBoost + SHAP ALC classifier - AUC 0.984 |
-| Which prescribers have abnormal opioid patterns? | Isolation Forest anomaly detector - 81.2% precision |
-
----
-
-## 📸 Live Platform Screenshots
-
-<div align="center">
-
-### 📊 Streamlit Dashboard
-<img width="1512" alt="Streamlit Dashboard" src="https://github.com/user-attachments/assets/b1d86d52-02a0-4993-8278-2f714dbd2993" />
-
-<br><br>
-
-### 📖 FastAPI Swagger Docs
-<img width="1512" alt="Ontario ED Intelligence API" src="https://github.com/user-attachments/assets/897b3f7b-bd2d-4e61-87a6-5d426e3481e3" />
-
-<br><br>
-
-### 🔬 Live API Prediction — ALC Risk Score
-<img width="1512" height="982" alt="Screenshot 2026-03-02 at 12 20 47 AM" src="https://github.com/user-attachments/assets/bca6828d-e2e9-4a53-a1c0-1b1e7eab65a1" />
-
-
-</div>
+| Strategic Domain | Platform Capability | Core Architecture |
+|------------------|---------------------|-------------------|
+| **Executive Operations Center** | Multi-facility operational reporting, triage stratification, and automated root-cause diagnostics. | Dynamic MoM KPIs, CTAS & ICD-10 breakdown layers |
+| **Throughput Forecasting** | Proactive, 30-day look-ahead projections for acute front-door volume arrivals. | Facebook Prophet time-series models with statutory holiday integration |
+| **Geospatial Health Equity** | Neighborhood-level structural barriers and healthcare access disparity tracking. | GeoPandas FSA mapping over 260 Greater Toronto Area zones |
+| **Inpatient Risk Tracking** | Automated detection of alternate level of care (ALC) exit blockages during initial admission. | XGBoost binary classifier + SHAP explainability values |
+| **Controlled Substance Auditing** | Compliance tracking and prescribing pattern anomaly alerts across provider cohorts. | Isolation Forest unsupervised anomaly detection models |
 
 ---
 
-## 📊 Modules
+## 📊 Analytics Architecture & System Design
 
-### Module 1 - ED Surge Forecaster
-> Which hospitals will be over capacity in the next 7 days?
-
-- **Model:** Facebook Prophet with Ontario statutory holiday regressors
-- **Hospitals:** Sunnybrook HSC, Unity Health, North York General, Scarborough Health Network, Humber River Health, Trillium Health Partners
-- **Result:** 137 surge days predicted across 6 hospitals in 30-day horizon
-
-<div align="center">
-<img src="reports/ed_trends_by_hospital.png" width="750">
-</div>
+### 🏠 Executive Operations Center & System Metrics
+Serves as the primary system entry page, aggregating cross-facility performance across historical timelines and regional cohorts.
+* **Operational Monitoring:** Breaks down macro system metrics across two distinct priority rows: *Demand/Throughput* (Total Visits, Wait Hours, LOS, Bed Occupancy) and *Quality/Exit Capacity* (Active ALC Beds, Admission Rates, LWBS Rates, Unplanned 30D Readmissions).
+* **Clinical Triage Performance (CTAS):** Aggregates volumes and wait distributions by the Canadian Triage and Acuity Scale (CTAS 1–5), exposing clinical discordance bottlenecks where lower-acuity (CTAS 3/4) cohorts experience delayed wait times due to acute inpatient blocks.
+* **Clinical Diagnostic Profiling (ICD-10):** Evaluates asset consumption metrics grouped by diagnostic category (e.g., F03 Dementia, I63 Ischemic Stroke), proving how post-acute placement limitations drive systemic gridlock.
+* **Data Governance & Pipeline Integrity:** Embeds a live quality control audit matrix checking data completeness ratios, ICD-10 coding lag delays, timestamp index validity, and duplicate identifier metrics to verify submission compliance before provincial transfer.
 
 ---
 
-### Module 2 - GTA Health Equity Heatmap
-> Which neighbourhoods have the worst ED access and health outcomes?
-
-- **Data:** Statistics Canada FSA Boundaries 2021 - real geographic shapefile
-- **Coverage:** 260 Forward Sortation Areas across Greater Toronto Area
-- **Result:** Scarborough (M1W, M1N) confirmed as highest-need zones
-
-<div align="center">
-<img src="reports/gta_fsa_base_map.png" width="750">
-</div>
+### 📊 ED Surge Forecasting System
+> Proactive capacity planning and diversion strategy mapping.
+* **Model:** Facebook Prophet utilizing multiplicative seasonal parameters and custom provincial statutory holiday regressors.
+* **Scope:** 6 core GTA hospital hubs (Sunnybrook HSC, Unity Health, North York General, Scarborough Health Network, Humber River Health, Trillium Health Partners).
+* **Result:** 137 surge alerts flagged across a rolling 30-day horizon, evaluating structural volume shifts.
 
 ---
 
-### Module 3 - ALC Bed Block Analyzer
-> Which patients are blocking acute beds and need discharge planning today?
-
-- **Model:** XGBoost binary classifier with SHAP explainability
-- **ROC-AUC:** 0.984 | **Average Precision:** 0.998
-- **Result:** 333 beds blocked across 6 hospitals
-
-Top 5 ALC risk factors by SHAP:
-1. Age - 2.6561
-2. Cognitive Impairment - 1.4064
-3. Has Caregiver - 0.9888
-4. Lives Alone - 0.8703
-5. Diagnosis - 0.7848
-
-<div align="center">
-<img src="reports/alc_model_performance.png" width="750">
-</div>
+### 🗺️ Geospatial Health Equity Mapping
+> Socioeconomic boundary analysis matching physical access bottlenecks.
+* **Data Layer:** Statistics Canada Forward Sortation Area (FSA) 2021 digital boundary shapefiles.
+* **Scope:** 260 unique GTA postal code boundary markers.
+* **Result:** Confirmed stark geographic access variance, identifying structural high-need patterns in specific sub-regions (e.g., Scarborough M1W/M1N clusters).
 
 ---
 
-### Module 4 - Prescription Anomaly Detector
-> Which prescribers have unusual opioid or polypharmacy patterns?
-
-- **Model:** Isolation Forest unsupervised anomaly detection
-- **Coverage:** 2,000 prescribers across GTA hospitals and community settings
-- **Precision:** 0.812 | **Recall:** 0.812
-
-Anomaly breakdown:
-- Opioid over-prescribers: 22 (27.5%)
-- Volume outliers: 20 (25.0%)
-- High-risk combinations: 18 (22.5%)
-- Other anomalies: 20 (25.0%)
-
-<div align="center">
-<img src="reports/rx_opioid_risk_quadrant.png" width="750">
-</div>
+### 🛏️ Inpatient ALC Bed Block Analysis
+> Identifying acute-care exit bottlenecks before hallway medicine escalates.
+* **Predictive Framework:** XGBoost ensemble binary classifier paired with SHAP TreeExplainer vectors.
+* **Performance:** ROC-AUC: **0.984** | Average Precision: **0.998**.
+* **Result:** Isolated 333 localized active bed block scenarios to focus clinical discharge teams.
 
 ---
 
-## 📈 Key Results Summary
-
-| Module | Model | Key Metric | Result |
-|--------|-------|------------|--------|
-| ED Surge Forecaster | Facebook Prophet | Surge days (30-day) | **137 across 6 hospitals** |
-| Health Equity Heatmap | GeoPandas + Folium | FSAs analysed | **260 GTA zones** |
-| ALC Bed Block Analyzer | XGBoost + SHAP | ROC-AUC | **0.984** |
-| ALC Bed Block Analyzer | XGBoost + SHAP | Beds blocked | **333 across 6 hospitals** |
-| Rx Anomaly Detector | Isolation Forest | Precision / Recall | **0.812 / 0.812** |
-| Rx Anomaly Detector | Isolation Forest | Flagged prescribers | **80 of 2,000** |
+### 💊 Controlled Substance Audit Engine
+> Statistical guardrails and quality auditing over systemic prescribing cohorts.
+* **Model:** Isolation Forest unsupervised outlier detection framework evaluating 2,000 active provider IDs.
+* **Performance:** Precision: **0.812** | Recall: **0.812**.
+* **Remediation Mapping:** Pinpoints outlier clinical footprints split between volume-driven variations, high-risk drug combinations, and outlier morphine milligram equivalents (MME).
 
 ---
 
-## 🛠 Tech Stack
+## 🛠 Technical Infrastructure
 
-| Category | Tools |
-|----------|-------|
-| Languages | Python 3.10 |
-| ML / Forecasting | XGBoost, Facebook Prophet, Isolation Forest, scikit-learn |
-| Explainability | SHAP TreeExplainer |
-| Geospatial | GeoPandas, Folium, Shapely |
-| Visualization | Matplotlib, Seaborn, Plotly |
-| Dashboard | Streamlit |
-| API | FastAPI + Uvicorn |
-| Containerization | Docker, Docker Buildx (linux/amd64) |
-| Registry | Azure Container Registry (ACR) |
-| Deployment | Azure Container Apps — Canada Central |
-| CI/CD | GitHub Actions |
-| Data Sources | Statistics Canada FSA 2021, Ontario Health open data |
-
----
-
-## ☁️ Azure Deployment Architecture
-
-```
-GitHub Actions CI
-      │
-      ▼
-Docker Buildx (linux/amd64)
-      │
-      ▼
-Azure Container Registry (ontarioedregistry.azurecr.io)
-      │
-      ├──► ontario-ed-api:v1        (FastAPI — port 8000)
-      └──► ontario-ed-dashboard:v3  (Streamlit — port 8501)
-                    │
-                    ▼
-      Azure Container Apps Environment
-      ontario-ed-env — Canada Central
-      ┌─────────────────────────────────────────┐
-      │  ontario-ed-api                         │
-      │  https://ontario-ed-api.icydune-...     │
-      │  CPU: 0.5 | Memory: 1Gi                 │
-      ├─────────────────────────────────────────┤
-      │  ontario-ed-dashboard                   │
-      │  https://ontario-ed-dashboard.icydune.. │
-      │  CPU: 0.5 | Memory: 1Gi                 │
-      └─────────────────────────────────────────┘
-            Log Analytics Workspace
-            workspace-ontarioedrgBklL
-```
-
----
-
-## 🚀 Deploy Your Own
-
-### Prerequisites
-- Azure CLI + Container Apps extension
-- Docker Desktop with Buildx
-- Azure subscription
-
-### 1 — Clone and configure
-```bash
-git clone https://github.com/Aswinab97/ontario-ed-intelligence.git
-cd ontario-ed-intelligence
-
-export ACR_NAME=ontarioedregistry
-export RESOURCE_GROUP=ontario-ed-rg
-export ENV_NAME=ontario-ed-env
-export LOCATION=canadacentral
-export API_APP=ontario-ed-api
-export DASH_APP=ontario-ed-dashboard
-```
-
-### 2 — Build and push images
-```bash
-az acr login --name $ACR_NAME
-
-docker buildx build --platform linux/amd64 \
-  -f Dockerfile.api \
-  -t $ACR_NAME.azurecr.io/ontario-ed-api:v1 --push .
-
-docker buildx build --platform linux/amd64 \
-  -f Dockerfile.dashboard \
-  -t $ACR_NAME.azurecr.io/ontario-ed-dashboard:v1 --push .
-```
-
-### 3 — Create environment and deploy
-```bash
-az containerapp env create \
-  --name $ENV_NAME \
-  --resource-group $RESOURCE_GROUP \
-  --location $LOCATION
-
-ACR_PASSWORD=$(az acr credential show \
-  --name $ACR_NAME --query "passwords[0].value" --output tsv)
-
-az containerapp create \
-  --name $API_APP \
-  --resource-group $RESOURCE_GROUP \
-  --environment $ENV_NAME \
-  --image $ACR_NAME.azurecr.io/ontario-ed-api:v1 \
-  --registry-server $ACR_NAME.azurecr.io \
-  --registry-username $ACR_NAME \
-  --registry-password $ACR_PASSWORD \
-  --target-port 8000 --ingress external \
-  --cpu 0.5 --memory 1.0Gi
-
-az containerapp create \
-  --name $DASH_APP \
-  --resource-group $RESOURCE_GROUP \
-  --environment $ENV_NAME \
-  --image $ACR_NAME.azurecr.io/ontario-ed-dashboard:v1 \
-  --registry-server $ACR_NAME.azurecr.io \
-  --registry-username $ACR_NAME \
-  --registry-password $ACR_PASSWORD \
-  --target-port 8501 --ingress external \
-  --cpu 0.5 --memory 1.0Gi
-```
-
----
-
-## 💻 Quick Start (Local)
-
-```bash
-git clone https://github.com/Aswinab97/ontario-ed-intelligence.git
-cd ontario-ed-intelligence
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-jupyter notebook
-```
+| Layer | Technologies and Tools |
+|---|---|
+| **Languages & Core** | Python 3.10, NumPy, Pandas, Jupyter Workspace |
+| **Statistical Modeling** | XGBoost, Facebook Prophet, scikit-learn (Isolation Forest) |
+| **Model Explainability** | SHAP (SHapley Additive exPlanations) |
+| **Geospatial Computation** | GeoPandas, Folium, Shapely, Fiona |
+| **Interface & Data Layers** | Streamlit, FastAPI, Uvicorn Server, REST Architecture |
+| **Containerization & Cloud** | Docker, Multistage Buildx, Azure Container Registry (ACR), Azure Container Apps |
+| **Data Integrity** | Custom Automated Compliance Audit Framework (Schema & Null Validations) |
 
 ---
 
 ## 📁 Repository Structure
-
-```
 ontario-ed-intelligence/
-├── .github/workflows/ci.yml
-├── Dockerfile.api
-├── Dockerfile.dashboard
+├── .github/workflows/ci.yml   <- Automated CI linting & compilation
+├── Dockerfile.api             <- Multistage Docker recipe for FastAPI service
+├── Dockerfile.dashboard       <- Multistage Docker recipe for Streamlit client
+├── fact_operations.csv        <- Executive Dashboard Data Layer (Operational Matrix)
 ├── data/
 │   ├── raw/
 │   └── processed/
@@ -302,54 +123,28 @@ ontario-ed-intelligence/
 │   └── 04_Rx_Anomaly_Detector.ipynb
 ├── reports/
 ├── screenshots/
-│   ├── dashboard.png
-│   ├── api-docs.png
-│   └── api-test.png
 ├── tests/
-├── app.py
-├── main.py
+├── app.py                     <- Complete Professional Command Suite Entrypoint
+├── main.py                    <- API Endpoint Handler
 ├── requirements.txt
 └── README.md
-```
 
 ---
 
-## 🏥 Ontario Health Context
+## ⚠️ Data Governance & Disclaimer
 
-| Priority | How This Platform Helps |
-|----------|------------------------|
-| **ED Overcrowding** | Surge forecasting enables proactive staffing and diversion decisions 7 days ahead |
-| **Health Equity** | FSA-level mapping identifies underserved Scarborough communities for targeted investment |
-| **ALC / LTC Pipeline** | Early ALC flag at admission enables same-day discharge planning and reduces hallway medicine |
-| **Opioid Crisis** | Prescriber anomaly detection surfaces outliers for CPSO audit prioritization |
+All provider identifiers, patient traits, and operational daily volumes used outside geographical files are **synthetically modeled** utilizing non-identifiable provincial distributions. No Protected Health Information (PHI) or corporate records were ingested, complying fully with the *Personal Health Information Protection Act (PHIPA)*.
 
----
-
-## ⚠️ Data Disclaimer
-
-All patient, prescriber, and ED visit data is **synthetically generated**.
-No real patient data or personal health information (PHI) is used.
-Synthetic data is modelled on publicly available Ontario Health and Statistics Canada reports.
-
-Real data integration points for production:
-- NACRS for ED visit data
-- Ontario Drug Benefit (ODB) database for prescribing patterns
-- CIHI Discharge Abstract Database for ALC and LOS data
-- Statistics Canada FSA boundaries (already integrated - real shapefile)
+Public integration endpoints for migration:
+* **NACRS (National Ambulatory Care Reporting System):** Direct real-time pipeline feed for emergency encounters.
+* **DAD (Discharge Abstract Database):** Inpatient acute documentation integration for baseline LOS and clinical abstracts.
+* **ODB (Ontario Drug Benefit System):** Pharmacy and clinician prescription validation registers.
 
 ---
 
 ## 👤 Author
 
-**Aswin Anil Bindu** — Health Data Scientist & ML Engineer
-- 📍 Ontario, Canada
-- 🔗 [GitHub](https://github.com/Aswinab97)
-- 💼 [LinkedIn](https://www.linkedin.com/in/aswinab/)
-
----
-
-## 📄 License
-
-MIT License
-
-*Data sources: Statistics Canada Open Government Licence, Ontario Health open data*
+**Aswin Anil Bindu** — Health Data Professional & Analytics Engineer
+* 📍 Ontario, Canada
+* 🔗 [GitHub](https://github.com/Aswinab97)
+* 💼 [LinkedIn](https://www.linkedin.com/in/aswinab/)
